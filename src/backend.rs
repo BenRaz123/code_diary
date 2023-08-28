@@ -32,7 +32,9 @@ macro_rules! fail {
     };
 }
 
-fn get_latest_id() -> u64 {
+/// Gets the latest id. What this meaans is that if there are four diary
+/// entries being stored, for example, the function will return 4.
+pub fn get_latest_id() -> u64 {
     let mut id_list: Vec<u64> = iter!("Id")
         .iter()
         .map(|x| x.parse::<u64>().unwrap())
@@ -120,7 +122,7 @@ pub fn store_entry(entry: &DiaryEntry) {
     let date = entry.clone().date;
     let title = entry.clone().title.unwrap_or(String::from(""));
     let content = entry.clone().content;
-    let id = get_latest_id() + 1;
+    let id = entry.clone().id;
 
     let query = format!("INSERT INTO Entries VALUES ({id}, '{date}', '{title}', '{content}');");
     execute(&query);
@@ -142,7 +144,10 @@ pub fn store_entry(entry: &DiaryEntry) {
 /// # }
 /// ```
 pub fn get_entries() -> Vec<DiaryEntry> {
-    //initialize_db();
+    let ids = iter!("Id")
+        .iter()
+        .map(|x| x.parse::<u64>().unwrap())
+        .collect::<Vec<u64>>();
     let dates = iter!("TimeStamp")
         .iter()
         .map(|x| TimeStamp::from_string(x).unwrap())
@@ -157,6 +162,7 @@ pub fn get_entries() -> Vec<DiaryEntry> {
     let mut results: Vec<DiaryEntry> = Vec::new();
 
     for index in 0..dates.len() {
+        let id = ids[index].clone();
         let date = dates[index].clone();
         let content = contents[index].clone();
 
@@ -167,6 +173,7 @@ pub fn get_entries() -> Vec<DiaryEntry> {
         };
 
         results.push(DiaryEntry {
+            id,
             date,
             title,
             content,

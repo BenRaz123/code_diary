@@ -21,46 +21,45 @@ macro_rules! prompt_list {
 
 macro_rules! prompt_text {
     ($name:ident with message $msg:expr) => {
-        let question = requestty::Question::input($msg)
-            .message($msg)
-            .build();
+        let question = requestty::Question::input($msg).message($msg).build();
         let answer = requestty::prompt_one(question).unwrap();
         let $name = answer.as_string().unwrap();
-    }
+    };
 }
 
 macro_rules! prompt_confirm {
     ($name:ident with message $msg:expr) => {
-        let question = requestty::Question::confirm($msg)
-            .message($msg)
-            .build();
+        let question = requestty::Question::confirm($msg).message($msg).build();
         let answer = requestty::prompt_one(question).unwrap();
         let $name = answer.as_bool().unwrap();
-    }
+    };
 }
 
 pub fn prompt_action() -> Action {
     prompt_list! { action
-        with choices ["Add", "Delete", "View"] 
+        with choices ["Add", "Delete", "View"]
         with message "What do you want to do?"
     };
-    
+
     const ADD: usize = 0;
     const DELETE: usize = 1;
     const VIEW: usize = 2;
 
     match action {
-        ADD => Action::Add(Add { title:None, content:None }),
-        DELETE => Action::Delete(Delete { index:None }),
-        VIEW => Action::View(View {index:None}),
+        ADD => Action::Add(Add {
+            title: None,
+            content: None,
+        }),
+        DELETE => Action::Delete(Delete { index: None }),
+        VIEW => Action::View(View { index: None }),
         _ => unreachable!(),
     }
 }
 
 pub fn prompt_for_title() -> Option<String> {
     prompt_text! {
-        title with message 
-        "Please enter a title (optional) for your diary entry)" 
+        title with message
+        "Please enter a title (optional) for your diary entry)"
     };
 
     if title.len() == 0 {
@@ -71,8 +70,8 @@ pub fn prompt_for_title() -> Option<String> {
 }
 
 pub fn prompt_for_deletion(options: &Vec<DiaryEntry>) -> u64 {
-    prompt_list! { index 
-        with choices [options] 
+    prompt_list! { index
+        with choices [options]
         with message "Which item do you want to replace?"
     };
 
@@ -82,13 +81,15 @@ pub fn prompt_for_deletion(options: &Vec<DiaryEntry>) -> u64 {
         std::process::exit(0);
     }
 
+    println!("Index from prompt_for_deletion: {index}");
+
     index as u64
 }
 
 pub fn prompt_for_viewing(options: &Vec<DiaryEntry>) -> u64 {
     prompt_list! { index
-        with choices [options] 
-        with message "Which item do you want to view?" 
+        with choices [options]
+        with message "Which item do you want to view?"
     };
     index as u64
 }

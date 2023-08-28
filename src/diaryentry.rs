@@ -1,3 +1,4 @@
+use crate::backend::get_latest_id;
 use crate::timestamps::TimeStamp;
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
@@ -13,6 +14,8 @@ use crate::timestamps::TimeStamp;
 /// }
 /// ```
 pub struct DiaryEntry {
+    /// The program-wide unique id for this diary entry
+    pub id: u64,
     /// The date at which the timestamp was created, represnted as a [`TimeStamp`](crate::timestamps::TimeStamp)
     pub date: TimeStamp,
     /// An Optional Title. Can either be `Some(String)` or `None`
@@ -23,12 +26,15 @@ pub struct DiaryEntry {
 
 impl DiaryEntry {
     /// Takes in an option and string and returns a `DiaryEntry`
-    pub fn from_str_and_option<'a>(
-        title: &'a Option<String>, 
-        content: &'a str
-    ) -> Self {
+    pub fn from_str_and_option<'a>(title: &'a Option<String>, content: &'a str) -> Self {
+        let id = get_latest_id() + 1;
         let date = TimeStamp::new();
-        Self {title: title.to_owned(), content: content.to_string(), date}
+        Self {
+            id,
+            title: title.to_owned(),
+            content: content.to_string(),
+            date,
+        }
     }
     /// Takes a title and body and generates a timestamp, returning a `DiaryEntry`
     ///
@@ -45,7 +51,10 @@ impl DiaryEntry {
     /// # }
     /// ```
     pub fn new<'a>(title: &'a str, content: &'a str) -> Self {
+        let id = get_latest_id() + 1;
+
         Self {
+            id,
             date: TimeStamp::new(),
             title: Some(title.to_string()),
             content: content.to_string(),
@@ -66,6 +75,7 @@ impl DiaryEntry {
     /// }
     /// ```
     pub fn from_prompt() -> Self {
+        let id = get_latest_id() + 1;
         let date = TimeStamp::new();
         let title_question = requestty::Question::input("Title")
             .default("")
@@ -95,6 +105,7 @@ impl DiaryEntry {
         }
         let content = &content.unwrap().as_string().unwrap().to_string();
         Self {
+            id,
             date,
             title,
             content: content.clone(),
@@ -107,10 +118,10 @@ impl DiaryEntry {
             None => color_print::cformat!("<white>Untitled</>"),
         };
         color_print::cformat!(
-                "{} <magenta>(</><red>{}</><magenta>)</>:\n<yellow>{}</>",
-                formatted_title,
-                self.date,
-                self.content,
+            "{} <magenta>(</><red>{}</><magenta>)</>:\n<yellow>{}</>",
+            formatted_title,
+            self.date,
+            self.content,
         )
     }
 }
