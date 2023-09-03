@@ -1,3 +1,5 @@
+//! Contains the `TimeStamp` struct and it's logic
+
 use chrono::Datelike;
 use chrono::Timelike;
 

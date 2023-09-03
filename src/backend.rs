@@ -1,3 +1,7 @@
+//! # Backend module for code_diary
+//! mostly includes functions and macros related to backend database operations
+//! and anything that persists in memory
+
 use crate::diaryentry::DiaryEntry;
 use crate::timestamps::TimeStamp;
 
@@ -20,6 +24,14 @@ macro_rules! iter {
 }
 
 #[macro_export]
+/// A convenience macro for exiting with a nonzero status code with a message
+/// Example:
+/// ```
+/// # use crate::backend::fail;
+/// # fn main() {
+/// fail!("Bye!");
+/// unreachable!();
+/// # }
 macro_rules! fail {
     ($msg:expr) => {{
         eprintln!($msg);

@@ -1,3 +1,5 @@
+//! Contains functions for handling direct user input without CLI arguments.
+
 use crate::diaryentry::DiaryEntry;
 use crate::Action;
 use crate::Add;
@@ -35,6 +37,16 @@ macro_rules! prompt_confirm {
     };
 }
 
+/// Interactively asks a user where they want to Add, Delete, or View.
+/// Example:
+/// ```
+/// # use crate::backend::prompt_action;
+/// # use crate::Action;
+/// # fn main()
+/// match prompt_action() {
+///     Action::Add(_) | Action::Delete(_) | Action::View(_) => (),
+///     _ => unreachable!(),
+/// }
 pub fn prompt_action() -> Action {
     prompt_list! { action
         with choices ["Add", "Delete", "View"]
@@ -56,6 +68,7 @@ pub fn prompt_action() -> Action {
     }
 }
 
+/// Prompts the user for a title.
 pub fn prompt_for_title() -> Option<String> {
     prompt_text! {
         title with message
@@ -69,6 +82,8 @@ pub fn prompt_for_title() -> Option<String> {
     Some(title.to_string())
 }
 
+/// Same as [`prompt_for_viewing`](crate::frontend::prompt_for_viewing) but the
+/// message is different and there is a confirmation step.
 pub fn prompt_for_deletion(options: &Vec<DiaryEntry>) -> u64 {
     prompt_list! { index
         with choices [options]
@@ -86,6 +101,7 @@ pub fn prompt_for_deletion(options: &Vec<DiaryEntry>) -> u64 {
     index as u64
 }
 
+/// Takes in a list of `DiaryEntry`s and selects the index that the user choose
 pub fn prompt_for_viewing(options: &Vec<DiaryEntry>) -> u64 {
     prompt_list! { index
         with choices [options]
@@ -94,6 +110,7 @@ pub fn prompt_for_viewing(options: &Vec<DiaryEntry>) -> u64 {
     index as u64
 }
 
+/// Prompts for the body of a `DiaryEntry`
 pub fn prompt_for_content() -> String {
     prompt_text!(content with message "Please write your diary entry");
     content.to_string()

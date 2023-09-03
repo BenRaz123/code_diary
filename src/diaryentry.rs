@@ -1,3 +1,5 @@
+//! A module containing the `DiaryEntry` struct and related implementations
+
 use crate::backend::get_latest_id;
 use crate::timestamps::TimeStamp;
 
@@ -111,7 +113,7 @@ impl DiaryEntry {
             content: content.clone(),
         }
     }
-
+    /// Displays (converts to string) a diary entry in detailed, colorful format
     pub fn show_detail(&self) -> String {
         let formatted_title = match &self.title {
             Some(title) => color_print::cformat!("<blue, bold>{}</>", title),

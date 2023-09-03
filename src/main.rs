@@ -20,8 +20,11 @@ struct Cli {
 #[argh(subcommand)]
 /// The different actions a user can take
 pub enum Action {
+    /// Add an entry
     Add(Add),
+    /// Delete an entry
     Delete(Delete),
+    /// View an entry
     View(View),
 }
 
